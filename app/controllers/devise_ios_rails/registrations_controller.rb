@@ -1,8 +1,8 @@
 module DeviseIosRails
   class RegistrationsController < Devise::RegistrationsController
-    Devise.mappings.keys.each do |key|
-      acts_as_token_authentication_handler_for Object.const_get(key.to_s.classify)
-      skip_before_filter :"authenticate_#{key.to_s}_from_token!", only: %i(new create cancel)
+    Devise.mappings.each do |key, mapping|
+      acts_as_token_authentication_handler_for Object.const_get(mapping.class_name), fallback: :none
+      skip_before_filter :"authenticate_#{mapping.name.to_s}_from_token!", only: %i(new create cancel)
     end
 
     def authenticate_scope!
