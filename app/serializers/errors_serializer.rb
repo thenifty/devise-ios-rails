@@ -1,3 +1,5 @@
+require 'active_model_serializers'
+
 class ErrorsSerializer < ActiveModel::Serializer
   root 'error'
   attributes :message, :code, :status
