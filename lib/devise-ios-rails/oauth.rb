@@ -18,14 +18,24 @@ module DeviseIosRails
     module ClassMethods
       def from_oauth(attributes, new_user_callback = -> {})
         created = false
+        user = nil
+        existing_user = where(email: attributes[:email]).first
 
-        user = where(attributes.slice(:uid, :provider)).first_or_create do |user|
-          user.email = attributes[:email]
-          user.password = Devise.friendly_token[0,20]
-          user.provider    = attributes[:provider]
-          user.uid         = attributes[:uid]
-          user.oauth_token = attributes[:oauth_token]
-          created = true
+        if existing_user.present?
+          if existing_user.uid.nil?
+            existing_user.update(attributes.slice(:uid, :provider))
+          end
+          
+          user = existing_user.reload
+        else
+          user = where(attributes.slice(:uid, :provider)).first_or_create do |user|
+            user.email = attributes[:email]
+            user.password = Devise.friendly_token[0,20]
+            user.provider    = attributes[:provider]
+            user.uid         = attributes[:uid]
+            user.oauth_token = attributes[:oauth_token]
+            created = true
+          end
         end
 
         if created
