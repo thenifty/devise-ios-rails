@@ -5,11 +5,17 @@ module DeviseIosRails
     respond_to :json
 
     def all
-      respond_with resource_class.from_oauth(resource_params)
+      respond_with resource_class.from_oauth(resource_params, new_user_callback)
     end
 
     alias_method :facebook, :all
     alias_method :google,   :all
+
+    protected
+
+    def new_user_callback
+      -> {}
+    end
 
     private
 
